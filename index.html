@@ -271,7 +271,7 @@ tbody td.r{text-align:right}
   <h1>Reporteria Completa - Retail.cl 2026</h1>
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <span class="badge-mysql">LIVE MySQL</span>
-    <span class="gen">Generado: 28/09/2026 11:00</span>
+    <span class="gen">Generado: 28/09/2026 11:49</span>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
       <span id="themeIcon">&#9790;</span><span id="themeLabel">Modo Claro</span>
     </button>
@@ -353,12 +353,14 @@ tbody td.r{text-align:right}
     <button class="cc-cfg-btn" onclick="openComConfig()">&#9881; Configurar comisiones</button>
   </div>
   <div class="vp-tabs" style="margin-bottom:16px">
-    <button class="tbtn ts active" onclick="setMgTab('shopify',this)">Shopify</button>
+    <button class="tbtn tt active" onclick="setMgTab('total',this)">Total</button>
+    <button class="tbtn ts"        onclick="setMgTab('shopify',this)">Shopify</button>
     <button class="tbtn tm"        onclick="setMgTab('meli',this)">MercadoLibre</button>
-    <button class="tbtn tf"        onclick="setMgTab('falabella',this)">Falabella / Linio</button>
+    <button class="tbtn tf"        onclick="setMgTab('falabella',this)">Falabella</button>
     <button class="tbtn tw"        onclick="setMgTab('walmart',this)">Walmart</button>
   </div>
-  <div id="mg-tab-shopify"   class="vp-tab-content active"><div id="mg-ch-shopify"></div></div>
+  <div id="mg-tab-total"     class="vp-tab-content active"><div id="mg-total-inner"></div></div>
+  <div id="mg-tab-shopify"   class="vp-tab-content"><div id="mg-ch-shopify"></div></div>
   <div id="mg-tab-meli"      class="vp-tab-content"><div id="mg-ch-meli"></div></div>
   <div id="mg-tab-falabella" class="vp-tab-content"><div id="mg-ch-falabella"></div></div>
   <div id="mg-tab-walmart"   class="vp-tab-content"><div id="mg-ch-walmart"></div></div>
@@ -396,6 +398,7 @@ tbody td.r{text-align:right}
   </div>
   <div id="re-yoy"     style="margin-top:24px"></div>
   <div id="re-margenes" style="margin-top:24px"></div>
+  <div id="re-quarters" style="margin-top:24px"></div>
 </div>
 
 <!-- ══ TAB 2: DASHBOARD COMPLETO ═══════════════════════════════════ -->
@@ -427,7 +430,6 @@ tbody td.r{text-align:right}
       <button class="tbtn tm"     onclick="setVpTab('meli',this)">MercadoLibre</button>
       <button class="tbtn tf"     onclick="setVpTab('falabella',this)">Falabella</button>
       <button class="tbtn tw"     onclick="setVpTab('walmart',this)">Walmart</button>
-      <button class="tbtn tl"     onclick="setVpTab('linio',this)">Linio</button>
     </div>
 
     <div id="vp-tab-consolidado" class="vp-tab-content active">
@@ -792,8 +794,8 @@ function fmtPct(v,ref){
   const p=((v-ref)/ref*100);
   return '<span class="'+(p>=0?'pos':'neg')+'">'+(p>=0?'+':'')+p.toFixed(1)+'%</span>';
 }
-function pctColor(p){ return p>=100?'pct-gg':p>=85?'pct-g':p>=70?'pct-y':'pct-r'; }
-function pctColorHex(p){ return p>=100?'#15803d':p>=85?'#22c55e':p>=70?'#f59e0b':'#ef4444'; }
+function pctColor(p){ return p>=100?'pct-gg':p>=85?'pct-y':'pct-r'; }
+function pctColorHex(p){ return p>=100?'#22c55e':p>=85?'#f59e0b':'#ef4444'; }
 function fmt$(n){ return '$ '+Math.round(n).toLocaleString('es-CL'); }
 function fmtN(n){ return Math.round(+n).toLocaleString('es-CL'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -869,7 +871,7 @@ function exportUlm(){
 function renderUlmTable(){
   var el=document.getElementById('mg-ulm-section'); if(!el) return;
   var CHS=['shopify','meli','falabella','walmart'];
-  var CNAMES={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella / Linio',walmart:'Walmart'};
+  var CNAMES={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart'};
   var CHC={shopify:'#96bf48',meli:'#f59e0b',falabella:'#a855f7',walmart:'#3b82f6',linio:'#ec4899'};
   var MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   // mostrar año anterior y año actual
@@ -918,7 +920,7 @@ function renderUlmTable(){
 // ── Márgenes ───────────────────────────────────────────────────────────────
 function renderMargenes(){
   var CHS=['shopify','meli','falabella','walmart','linio'];
-  var CNAMES={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart',linio:'Linio'};
+  var CNAMES={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart',linio:'Falabella'};
   var CHC={shopify:'#96bf48',meli:'#f59e0b',falabella:'#a855f7',walmart:'#3b82f6',linio:'#ec4899'};
   function pctCol(p){return p>=25?'#22c55e':p>=15?'#f59e0b':'#ef4444';}
   function dltCol(d){return d<-1?'#ef4444':d>1?'#22c55e':'#f59e0b';}
@@ -1093,7 +1095,7 @@ function renderMargenes(){
     skuTable(skuImp,'#818cf8','Importados')
     +skuTable(skuStk,'#a78bfa','Stock Propio');
 
-  // ── Sub-tabs por canal (Linio fusionado con Falabella) ──
+  // ── Sub-tabs por canal ──
   function mergedSkuMap(ch){
     var map={};
     Object.values(bySkuCh[ch]).forEach(function(r){
@@ -1141,7 +1143,7 @@ function renderMargenes(){
       ?{v:byCanal.falabella.v+lin.v, mr:byCanal.falabella.mr+lin.mr, ma:byCanal.falabella.ma+lin.ma,
         v_imp:byCanal.falabella.v_imp+(lin.v_imp||0)}
       :byCanal[ch];
-    var label=ch==='falabella'?'Falabella / Linio':CNAMES[ch];
+    var label=CNAMES[ch]||ch;
     if(d.v===0){
       el.innerHTML='<div class="no-data" style="padding:40px 0">Sin ventas en este canal para el periodo seleccionado</div>';
       return;
@@ -1152,7 +1154,7 @@ function renderMargenes(){
     var pctImp=d.v>0?Math.round(d.v_imp/d.v*100):0;
     el.innerHTML=
       '<div class="cards" style="margin-bottom:20px">'
-        +'<div class="card"><div class="c-label">Ventas '+label+'</div>'
+        +'<div class="card"><div class="c-label">Ventas '+label+' <span style="font-size:9px;font-weight:400;opacity:.6;letter-spacing:0;text-transform:none">(bruto)</span></div>'
           +'<div class="c-value money">'+fmt$(d.v)+'</div>'
           +'<div style="font-size:11px;color:var(--tx4);margin-top:6px">'+pctImp+'% importados</div>'
         +'</div>'
@@ -1222,6 +1224,111 @@ function renderMargenes(){
     +'</tr></thead>'
     +'<tbody>'+reRows+'</tbody></table></div>'
     +'</div>';
+  // ── Tab Total ──
+  var totEl=document.getElementById('mg-total-inner'); if(totEl){
+    var tPR2=grand.v>0?grand.mr/grand.v*100:0;
+    var tPA2=grand.v>0?grand.ma/grand.v*100:0;
+    var tDlt2=tPR2-tPA2;
+    var tImpColor=dltCol(tDlt2);
+    var tImpBg=tDlt2<-1?'rgba(239,68,68,.1)':'rgba(245,158,11,.1)';
+
+    // KPI cards
+    var kpiHtml='<div class="cards" style="margin-bottom:24px">'
+      +'<div class="card"><div class="c-label">Ventas Totales (bruto)</div>'
+        +'<div class="c-value money">'+fmt$(grand.v)+'</div>'
+        +'<div style="font-size:11px;color:var(--tx4);margin-top:6px">'+Math.round(grand.v>0?grand.v_imp/grand.v*100:0)+'% importados</div>'
+      +'</div>'
+      +'<div class="card" style="border-color:'+pctCol(tPR2)+'">'
+        +'<div class="c-label">Margen Real (con comisiones)</div>'
+        +'<div class="c-value money" style="color:'+pctCol(tPR2)+'">'+fmt$(grand.mr)+'</div>'
+        +'<div style="font-size:1.3rem;font-weight:800;color:'+pctCol(tPR2)+';margin-top:6px">'+tPR2.toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div class="card">'
+        +'<div class="c-label">Margen Aprox. (tasa fija)</div>'
+        +'<div class="c-value money" style="color:#64748b">'+fmt$(grand.ma)+'</div>'
+        +'<div style="font-size:1.3rem;font-weight:800;color:#64748b;margin-top:6px">'+tPA2.toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div class="card" style="border-color:'+tImpColor+'">'
+        +'<div class="c-label">Impacto Comisiones</div>'
+        +'<div style="margin-top:10px;padding:10px 12px;border-radius:6px;background:'+tImpBg+';border:1px solid '+tImpColor+'">'
+          +'<div style="font-size:1.4rem;font-weight:800;color:'+tImpColor+'">'+sgn(tDlt2)+tDlt2.toFixed(1)+' pp</div>'
+          +'<div style="font-size:11px;color:var(--tx4);margin-top:4px">'+sgn(grand.mr-grand.ma)+fmt$(grand.mr-grand.ma)+' en margen $</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+
+    // Tabla por canal
+    var chanRows=CHS.filter(function(ch){return ch!=='linio';}).map(function(ch){
+      var d=byCanal[ch]; if(d.v===0) return '';
+      var pR3=d.v>0?d.mr/d.v*100:0, pA3=d.v>0?d.ma/d.v*100:0, dlt3=pR3-pA3;
+      var share=grand.v>0?(d.v/grand.v*100):0;
+      var barW=Math.round(share*1.5);
+      return '<tr>'
+        +'<td><div class="ch-name"><div class="ch-dot" style="background:'+CHC[ch]+'"></div>'+CNAMES[ch]+'</div></td>'
+        +'<td class="r money-cell">'+fmt$(d.v)+'</td>'
+        +'<td><div style="display:flex;align-items:center;gap:6px">'
+          +'<div style="width:'+barW+'px;height:6px;background:'+CHC[ch]+';border-radius:3px;min-width:2px"></div>'
+          +'<span style="font-size:11px;color:var(--tx4)">'+share.toFixed(1)+'%</span>'
+        +'</div></td>'
+        +'<td class="r" style="color:#64748b">'+pA3.toFixed(1)+'%</td>'
+        +'<td class="r"><b style="font-size:1.05rem;color:'+pctCol(pR3)+'">'+pR3.toFixed(1)+'%</b></td>'
+        +'<td class="r"><b style="color:'+dltCol(dlt3)+'">'+sgn(dlt3)+dlt3.toFixed(1)+' pp</b></td>'
+        +'<td class="r money-cell" style="color:'+dltCol(dlt3)+'">'+sgn(d.mr-d.ma)+fmt$(d.mr-d.ma)+'</td>'
+        +'</tr>';
+    }).join('');
+    var totBarW=150;
+    chanRows+='<tr style="background:var(--bg-cur);font-weight:700;border-top:2px solid var(--bd3)">'
+      +'<td>TOTAL NEGOCIO</td>'
+      +'<td class="r money-cell">'+fmt$(grand.v)+'</td>'
+      +'<td></td>'
+      +'<td class="r" style="color:#64748b">'+tPA2.toFixed(1)+'%</td>'
+      +'<td class="r"><b style="font-size:1.15rem;color:'+pctCol(tPR2)+'">'+tPR2.toFixed(1)+'%</b></td>'
+      +'<td class="r"><b style="color:'+dltCol(tDlt2)+'">'+sgn(tDlt2)+tDlt2.toFixed(1)+' pp</b></td>'
+      +'<td class="r money-cell" style="color:'+dltCol(tDlt2)+'">'+sgn(grand.mr-grand.ma)+fmt$(grand.mr-grand.ma)+'</td>'
+      +'</tr>';
+    var chanHtml='<div style="margin-bottom:24px">'
+      +'<div class="stitle" style="margin-bottom:8px">Desglose por Canal</div>'
+      +'<div class="tbl-scroll"><table class="ch-table" style="min-width:680px">'
+      +'<thead><tr><th>Canal</th><th class="r">Ventas (bruto)</th><th>Participación</th>'
+      +'<th class="r">Mg. Aprox.</th><th class="r">Mg. Real</th>'
+      +'<th class="r">Impacto pp</th><th class="r">Impacto $</th></tr></thead>'
+      +'<tbody>'+chanRows+'</tbody></table></div></div>';
+
+    // Evolución mensual
+    var meses2=Object.keys(byMonth).sort();
+    var mRows2=meses2.map(function(m){
+      var d=byMonth[m];
+      var pR4=d.v>0?d.mr/d.v*100:0, pA4=d.v>0?d.ma/d.v*100:0, dlt4=pR4-pA4;
+      var barFill=Math.min(pR4,100).toFixed(1);
+      var barColor=pctCol(pR4);
+      return '<tr>'
+        +'<td style="white-space:nowrap">'+fmtMes(m)+'</td>'
+        +'<td class="r money-cell">'+fmt$(d.v)+'</td>'
+        +'<td class="r money-cell" style="color:'+pctCol(pR4)+'">'+fmt$(d.mr)+'</td>'
+        +'<td>'
+          +'<div style="display:flex;align-items:center;gap:6px">'
+            +'<div style="width:80px;height:6px;background:var(--bd);border-radius:3px;flex-shrink:0">'
+              +'<div style="width:'+barFill+'%;height:6px;border-radius:3px;background:'+pctCol(pR4)+'"></div>'
+            +'</div>'
+            +'<b style="font-size:12px;color:'+pctCol(pR4)+'">'+pR4.toFixed(1)+'%</b>'
+          +'</div>'
+        +'</td>'
+        +'<td class="r" style="color:#64748b">'+pA4.toFixed(1)+'%</td>'
+        +'<td class="r"><b style="color:'+dltCol(dlt4)+'">'+sgn(dlt4)+dlt4.toFixed(1)+' pp</b></td>'
+        +'</tr>';
+    }).join('');
+    var monthHtml=meses2.length
+      ?'<div>'
+        +'<div class="stitle" style="margin-bottom:8px">Evolución Mensual</div>'
+        +'<div class="tbl-scroll"><table class="ch-table" style="min-width:600px">'
+        +'<thead><tr><th>Mes</th><th class="r">Ventas (bruto)</th><th class="r">Mg. Real $</th>'
+        +'<th>% Real</th><th class="r">% Aprox.</th><th class="r">Impacto pp</th></tr></thead>'
+        +'<tbody>'+mRows2+'</tbody></table></div></div>'
+      :'';
+
+    totEl.innerHTML=kpiHtml+chanHtml+monthHtml;
+  }
+
   recalcUlmRe();
   renderUlmTable();
 }
@@ -1374,7 +1481,7 @@ function setConsolidadoMode(mode,btn){
 
 function renderConsolidado(){
   var CHS=['shopify','meli','falabella','walmart','linio'];
-  var CHL={shopify:'Shopify',meli:'MeLi',falabella:'Falabella',walmart:'Walmart',linio:'Linio'};
+  var CHL={shopify:'Shopify',meli:'MeLi',falabella:'Falabella',walmart:'Walmart',linio:'Falabella'};
   var CHC={shopify:'#96bf48',meli:'#f59e0b',falabella:'#a855f7',walmart:'#3b82f6',linio:'#ec4899'};
   var byMoney=consolidadoMode==='money';
   var filtered={};
@@ -1407,7 +1514,7 @@ function renderConsolidado(){
   var activeChs=CHS.filter(function(ch){return filtered[ch].length>0;});
   setCards('cards-consolidado',[
     {label:'Total Unidades',val:fmtN(total_u)},
-    {label:'Total Monto',val:fmt$(total$),money:true},
+    {label:'Total Monto (bruto)',val:fmt$(total$),money:true},
     {label:'SKUs Unicos',val:fmtN(skus.length)},
     {label:'Canales Activos',val:activeChs.length},
   ]);
@@ -1462,7 +1569,7 @@ function renderChannel(ch){
   var total_u=skus.reduce(function(s,r){return s+r.u;},0);
   setCards('cards-'+ch,[
     {label:'Unidades Vendidas',val:fmtN(total_u)},
-    {label:'Monto Total',val:fmt$(total$),money:true},
+    {label:'Monto Total (bruto)',val:fmt$(total$),money:true},
     {label:'SKUs Distintos',val:fmtN(skus.length)},
     {label:'Meses con Ventas',val:months.length},
   ]);
@@ -1485,7 +1592,7 @@ function setVpTab(tab,btn){
 }
 
 // ── Order modal ────────────────────────────────────────────────────────────
-var CNAMES_MODAL={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart',linio:'Linio'};
+var CNAMES_MODAL={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart',linio:'Falabella'};
 
 function ordenLink(canal,orden){
   if(!orden) return '<span class="dash">-</span>';
@@ -1660,7 +1767,7 @@ function renderYoY(){
   var pStart=String(py)+cStart.slice(4);
   var pEnd=String(py)+cEnd.slice(4);
   var CHS_ALL=['shopify','meli','falabella','walmart','linio'];
-  var CNAMES_YOY={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella / Linio',walmart:'Walmart'};
+  var CNAMES_YOY={shopify:'Shopify',meli:'MercadoLibre',falabella:'Falabella',walmart:'Walmart'};
   var CHC_YOY={shopify:'#96bf48',meli:'#f59e0b',falabella:'#a855f7',walmart:'#3b82f6'};
   // Mapa de canal DB → clave config METAS
   var CH_META={shopify:'Shopify',meli:'Mercado Libre',falabella:'Falabella',walmart:'Walmart'};
@@ -1854,6 +1961,110 @@ function renderResumen(s,e){
       +'</div>';
   }
   document.getElementById('re-grid').innerHTML=html;
+  renderQuarters();
+}
+
+function renderQuarters(){
+  var el=document.getElementById('re-quarters'); if(!el) return;
+  var cy=today.getFullYear(), py=cy-1;
+  var MESES_C=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var QS=[
+    {n:'Q1',ms:[0,1,2],s:cy+'-01-01',e:cy+'-03-31',ps:py+'-01-01',pe:py+'-03-31'},
+    {n:'Q2',ms:[3,4,5],s:cy+'-04-01',e:cy+'-06-30',ps:py+'-04-01',pe:py+'-06-30'},
+    {n:'Q3',ms:[6,7,8],s:cy+'-07-01',e:cy+'-09-30',ps:py+'-07-01',pe:py+'-09-30'},
+    {n:'Q4',ms:[9,10,11],s:cy+'-10-01',e:cy+'-12-31',ps:py+'-10-01',pe:py+'-12-31'},
+  ];
+  var todayStr=fmtD(today);
+  var todayMStr=todayStr.slice(0,7);
+
+  function mBruto(m){
+    var mStr=cy+'-'+String(m+1).padStart(2,'0');
+    var b=0;
+    CHANNELS.forEach(function(ch){
+      Object.entries(DAILY[ch]||{}).forEach(function(kv){ if(kv[0].slice(0,7)===mStr) b+=kv[1].g; });
+    });
+    return b;
+  }
+  function mMeta(m){ var t=0; CHANNELS.forEach(function(ch){ t+=(METAS[ch]&&METAS[ch][m])||0; }); return t; }
+
+  var html='<div class="section" style="margin-top:0">'
+    +'<h2><span class="dot" style="background:#8b5cf6"></span>Análisis por Quarter — '+cy+'</h2>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">';
+
+  QS.forEach(function(q,qi){
+    var bruto=0, meta=0, bruto_py=0;
+    CHANNELS.forEach(function(ch){
+      Object.entries(DAILY[ch]||{}).forEach(function(kv){
+        var k=kv[0], v=kv[1];
+        if(k>=q.s&&k<=q.e) bruto+=v.g;
+        if(k>=q.ps&&k<=q.pe) bruto_py+=v.g;
+      });
+      q.ms.forEach(function(m){ meta+=(METAS[ch]&&METAS[ch][m])||0; });
+    });
+    var pct=meta>0?bruto/meta*100:0;
+    var color=pctColorHex(pct);
+    var isActive=q.s<=todayStr&&todayStr<=q.e;
+    var isFuture=q.s>todayStr;
+    var yoyPct=bruto_py>0?(bruto-bruto_py)/bruto_py*100:0;
+    var yoyColor=yoyPct>=0?'#22c55e':'#ef4444';
+    var yoySign=yoyPct>=0?'+':'';
+
+    // Desglose mensual
+    var detail='<div id="re-qd-'+qi+'" style="display:none;margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)">';
+    q.ms.forEach(function(m){
+      var mb=mBruto(m), mm=mMeta(m), mp=mm>0?mb/mm*100:0;
+      var mc=pctColorHex(mp);
+      var mStr=cy+'-'+String(m+1).padStart(2,'0');
+      var mFuture=mStr>todayMStr;
+      detail+='<div style="margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
+          +'<span style="font-size:12px;font-weight:600;color:var(--tx)">'+MESES_C[m]+'</span>'
+          +'<b style="font-size:12px;color:'+(mFuture?'var(--tx4)':mc)+'">'+mp.toFixed(1)+'%</b>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx4);margin-bottom:4px">'
+          +'<span>'+fmtM(mb)+'</span><span>Meta: '+fmtM(mm)+'</span>'
+        +'</div>'
+        +'<div style="height:3px;background:var(--bd);border-radius:2px">'
+          +'<div style="height:3px;border-radius:2px;background:'+(mFuture?'var(--bd)':mc)+';width:'+Math.min(mp,100).toFixed(1)+'%"></div>'
+        +'</div>'
+      +'</div>';
+    });
+    detail+='</div>';
+
+    html+='<div style="background:var(--bg-card);border:1px solid '+(isActive?color:'var(--bd)')+';border-radius:12px;padding:16px;cursor:pointer" onclick="toggleQDetail('+qi+')">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<span style="font-size:11px;font-weight:700;color:'+(isActive?color:'var(--tx4)')+';letter-spacing:.06em">'
+          +q.n+(isActive?' · EN CURSO':isFuture?' · PENDIENTE':' · CERRADO')
+        +'</span>'
+        +'<span style="font-size:10px;color:var(--tx4)">▼</span>'
+      +'</div>'
+      +'<div style="font-size:1.2rem;font-weight:700;color:'+(isFuture?'var(--tx4)':'var(--tx)')+'">'+fmtM(bruto)+'</div>'
+      +'<div style="font-size:11px;color:var(--tx4);margin-top:2px">Meta: '+fmtM(meta)+'</div>'
+      +'<div style="margin:8px 0 4px;height:4px;background:var(--bd);border-radius:2px">'
+        +'<div style="height:4px;border-radius:2px;background:'+(isFuture?'var(--bd)':color)+';width:'+Math.min(pct,100).toFixed(1)+'%"></div>'
+      +'</div>'
+      +'<div style="font-size:.95rem;font-weight:700;color:'+(isFuture?'var(--tx4)':color)+'">'+((!isFuture&&pct>=100)?'✓ ':'')+pct.toFixed(1)+'%</div>'
+      +(bruto_py>0
+        ?'<div style="font-size:11px;color:var(--tx4);margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">'
+          +'YoY '+py+': '+fmtM(bruto_py)
+          +'<b style="margin-left:6px;color:'+yoyColor+'">'+yoySign+yoyPct.toFixed(1)+'%</b>'
+          +'</div>'
+        :'')
+      +detail
+      +'</div>';
+  });
+  html+='</div></div>';
+  el.innerHTML=html;
+}
+
+function toggleQDetail(qi){
+  var allVisible=[0,1,2,3].every(function(i){
+    var d=document.getElementById('re-qd-'+i); return d&&d.style.display!=='none';
+  });
+  [0,1,2,3].forEach(function(i){
+    var d=document.getElementById('re-qd-'+i);
+    if(d) d.style.display=allVisible?'none':'block';
+  });
 }
 
 // ── Preset dropdown ────────────────────────────────────────────────────────
