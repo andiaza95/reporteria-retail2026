@@ -1801,6 +1801,9 @@ function groupByMonthSku(arr){
   return Object.values(m).sort(function(a,b){return b.mes<a.mes?-1:1;});
 }
 
+var _SKU_OVERRIDE={'IF-40FSB-TS':'Chimenea Eléctrica Empotrable - 40"','IF-50FSB-TS':'Chimenea Eléctrica Empotrable - 50"','IF-60FSB-TS':'Chimenea Eléctrica Empotrable - 60"'};
+function skuOverrideName(sku,nombre){return _SKU_OVERRIDE[sku]||nombre;}
+
 function vpToggleMes(tr){
   var open=tr.getAttribute('data-open')==='1';
   tr.setAttribute('data-open',open?'0':'1');
@@ -1820,7 +1823,7 @@ function monthTableExpandable(elId,months){
     var skuArr=Object.values(r.skus).sort(function(a,b){return b.$-a.$;});
     var skuRows=skuArr.map(function(s){
       return '<tr class="sku-expand-row" style="display:none;background:rgba(255,255,255,.03)">'
-        +'<td style="padding-left:28px"><span class="sku-badge">'+esc(s.sku)+'</span>&nbsp;<span style="color:var(--tx2);font-size:0.78rem">'+esc(s.nombre)+'</span></td>'
+        +'<td style="padding-left:28px"><span class="sku-badge">'+esc(s.sku)+'</span>&nbsp;<span style="color:var(--tx2);font-size:0.78rem">'+esc(skuOverrideName(s.sku,s.nombre))+'</span></td>'
         +'<td class="r">'+fmtN(s.u)+'</td>'
         +'<td class="r money-cell">'+fmt$(s.$)+'</td>'
         +'</tr>';
@@ -3167,6 +3170,7 @@ function proyBuildTable(group){
         if(nombre===sku&&SKU_FALLBACK[sku]) nombre=SKU_FALLBACK[sku];
         var SKU_STRIP={'ACC-0081':true,'ACC-0082':true};
         if(SKU_STRIP[sku]) nombre=nombre.replace(/\s*\+\s*panel solar/i,'').trim();
+        nombre=skuOverrideName(sku,nombre);
         tp.textContent=nombre;tp.style.display='block';
       } else tp.style.display='none';
     }
