@@ -2896,15 +2896,16 @@ function applyComConfig(){
         if(r.fecha&&r.fecha.startsWith(curYear+'-')){
           var m3=parseInt(r.fecha.split('-')[1],10)-1;
           if(m3>=0&&m3<12){
-            realVentas[m3]+=r.monto;
-            realMg[m3]+=r.monto*calcAprox(r,ch3);
+            var neto3=r.monto/1.19;
+            realVentas[m3]+=neto3;
+            realMg[m3]+=neto3*calcAprox(r,ch3);
           }
         }
       });
     });
     realMg=realMg.map(function(v){return Math.round(v);});
     function pbHasReal(i){return realVentas[i]>0;}
-    mt.innerHTML+='<tr class="row-section"><td style="'+STC+'">REAL DESDE REPORTE (ventas bruto MySQL)</td><td colspan="13"></td></tr>';
+    mt.innerHTML+='<tr class="row-section"><td style="'+STC+'">REAL DESDE REPORTE (ventas neto sin IVA)</td><td colspan="13"></td></tr>';
     mt.innerHTML+='<tr class="row-real"><td style="'+STC+'">Ventas Reales $</td>'
       +realVentas.map(function(v,i){return pbHasReal(i)?'<td style="color:var(--acc)">'+pbFmt(v)+'</td>':'<td style="color:var(--tx4)">&#8212;</td>';}).join('')
       +'<td style="color:var(--acc)">'+pbFmt(pbSum(realVentas.filter(function(v){return v>0;})))+'</td></tr>';
