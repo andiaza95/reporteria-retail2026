@@ -1908,7 +1908,12 @@ function renderConsolidado(){
     +'<th class="r">'+totalHdr+'</th><th>Participacion</th>'
     +chHeaders+'</tr></thead><tbody>'+rows+more+'</tbody></table>';
   var allRec=CHS.reduce(function(acc,ch){return acc.concat(filtered[ch]);}, []);
-  monthTable('table-mes-consolidado',groupByMonth(allRec));
+  var allRecFiltered=allRec.filter(function(r){
+    if(cfFilters.sku&&!cfFilters.sku.has(r.sku)) return false;
+    if(cfFilters.nombre&&!cfFilters.nombre.has(r.nombre)) return false;
+    return true;
+  });
+  monthTable('table-mes-consolidado',groupByMonth(allRecFiltered));
 }
 
 var CH_CFG={
