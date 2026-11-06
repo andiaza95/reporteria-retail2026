@@ -3104,6 +3104,8 @@ function proyBuildTable(group){
         var sku=btn.textContent.trim();var nombre=sku;
         var chs=['shopify','meli','falabella','walmart','linio'];
         for(var ci=0;ci<chs.length;ci++){var rows=DATA[chs[ci]]||[];for(var ri=0;ri<rows.length;ri++){if(rows[ri].sku===sku&&rows[ri].nombre){nombre=rows[ri].nombre;break;}}if(nombre!==sku)break;}
+        var SKU_NOTES={'ACC-0081':'sin panel solar','ACC-0081-2':'con panel solar','ACC-0082':'sin panel solar','ACC-0082-2':'con panel solar'};
+        if(SKU_NOTES[sku]) nombre=nombre+' — '+SKU_NOTES[sku];
         tp.textContent=nombre;tp.style.display='block';
       } else tp.style.display='none';
     }
