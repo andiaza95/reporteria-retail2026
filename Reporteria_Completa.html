@@ -1788,6 +1788,53 @@ function monthTable(elId,months){
   el.innerHTML='<table><thead><tr><th>Mes</th><th class="r">Unidades</th><th class="r">Monto</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
+function groupByMonthSku(arr){
+  var m={};
+  arr.forEach(function(r){
+    var mes=r.fecha.substring(0,7);
+    if(!m[mes]) m[mes]={mes:mes,u:0,$:0,skus:{}};
+    m[mes].u+=r.unidades; m[mes].$+=r.monto;
+    if(!m[mes].skus[r.sku]) m[mes].skus[r.sku]={sku:r.sku,nombre:r.nombre,u:0,$:0};
+    m[mes].skus[r.sku].u+=r.unidades; m[mes].skus[r.sku].$+=r.monto;
+    if(r.nombre.length>m[mes].skus[r.sku].nombre.length) m[mes].skus[r.sku].nombre=r.nombre;
+  });
+  return Object.values(m).sort(function(a,b){return b.mes<a.mes?-1:1;});
+}
+
+function vpToggleMes(tr){
+  var open=tr.getAttribute('data-open')==='1';
+  tr.setAttribute('data-open',open?'0':'1');
+  var tog=tr.querySelector('.mes-toggle');
+  if(tog) tog.style.transform=open?'':'rotate(90deg)';
+  var sib=tr.nextElementSibling;
+  while(sib&&sib.classList.contains('sku-expand-row')){
+    sib.style.display=open?'none':'';
+    sib=sib.nextElementSibling;
+  }
+}
+
+function monthTableExpandable(elId,months){
+  var el=document.getElementById(elId);
+  if(!months.length){el.innerHTML='<div class="no-data">Sin datos</div>';return;}
+  var rows=months.map(function(r){
+    var skuArr=Object.values(r.skus).sort(function(a,b){return b.$-a.$;});
+    var skuRows=skuArr.map(function(s){
+      return '<tr class="sku-expand-row" style="display:none;background:rgba(255,255,255,.03)">'
+        +'<td style="padding-left:28px"><span class="sku-badge">'+esc(s.sku)+'</span>&nbsp;<span style="color:var(--tx2);font-size:0.78rem">'+esc(s.nombre)+'</span></td>'
+        +'<td class="r">'+fmtN(s.u)+'</td>'
+        +'<td class="r money-cell">'+fmt$(s.$)+'</td>'
+        +'</tr>';
+    }).join('');
+    return '<tr class="mes-expand-hdr" style="cursor:pointer" onclick="vpToggleMes(this)" data-open="0">'
+      +'<td><span class="mes-toggle" style="display:inline-block;width:14px;font-size:0.65rem;transition:transform .15s">&#9654;</span>&nbsp;'+fmtMes(r.mes)+'</td>'
+      +'<td class="r">'+fmtN(r.u)+'</td>'
+      +'<td class="r money-cell">'+fmt$(r.$)+'</td>'
+      +'</tr>'
+      +skuRows;
+  }).join('');
+  el.innerHTML='<table><thead><tr><th>Mes</th><th class="r">Unidades</th><th class="r">Monto</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
 // ── VP: Column filters ─────────────────────────────────────────────────────
 function openCfDrop(col,btn,e){
   e.stopPropagation();
@@ -1913,7 +1960,7 @@ function renderConsolidado(){
     if(cfFilters.nombre&&!cfFilters.nombre.has(r.nombre)) return false;
     return true;
   });
-  monthTable('table-mes-consolidado',groupByMonth(allRecFiltered));
+  monthTableExpandable('table-mes-consolidado',groupByMonthSku(allRecFiltered));
 }
 
 var CH_CFG={
