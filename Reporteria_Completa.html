@@ -2890,16 +2890,22 @@ function applyComConfig(){
     var curYear=new Date().getFullYear().toString();
     var realVentas=new Array(12).fill(0);
     var realMg=new Array(12).fill(0);
+    // Ventas desde DAILY — misma fuente que Resumen Ejecutivo
+    Object.keys(DAILY).forEach(function(ch3){
+      Object.keys(DAILY[ch3]||{}).forEach(function(fecha){
+        if(fecha.startsWith(curYear+'-')){
+          var m3=parseInt(fecha.split('-')[1],10)-1;
+          if(m3>=0&&m3<12) realVentas[m3]+=(DAILY[ch3][fecha].g||0)/1.19;
+        }
+      });
+    });
+    // Margen desde DATA — necesita SKU para calcAprox
     var CH_MAP={shopify:'shopify',meli:'meli',falabella:'falabella',walmart:'walmart',linio:'linio'};
     Object.keys(CH_MAP).forEach(function(ch3){
       (DATA[ch3]||[]).forEach(function(r){
         if(r.fecha&&r.fecha.startsWith(curYear+'-')){
           var m3=parseInt(r.fecha.split('-')[1],10)-1;
-          if(m3>=0&&m3<12){
-            var neto3=r.monto/1.19;
-            realVentas[m3]+=neto3;
-            realMg[m3]+=neto3*calcAprox(r,ch3);
-          }
+          if(m3>=0&&m3<12) realMg[m3]+=(r.monto/1.19)*calcAprox(r,ch3);
         }
       });
     });
