@@ -3098,7 +3098,15 @@ function proyBuildTable(group){
   document.addEventListener('mouseover',function(e){
     var el=e.target.closest('[data-tip]');
     if(el&&el.tagName==='TD'){tp.textContent=el.getAttribute('data-tip');tp.style.display='block';}
-    else tp.style.display='none';
+    else{
+      var btn=e.target.closest('.proy-sku-btn');
+      if(btn){
+        var sku=btn.textContent.trim();var nombre=sku;
+        var chs=['shopify','meli','falabella','walmart','linio'];
+        for(var ci=0;ci<chs.length;ci++){var rows=DATA[chs[ci]]||[];for(var ri=0;ri<rows.length;ri++){if(rows[ri].sku===sku&&rows[ri].nombre){nombre=rows[ri].nombre;break;}}if(nombre!==sku)break;}
+        tp.textContent=nombre;tp.style.display='block';
+      } else tp.style.display='none';
+    }
   });
   document.addEventListener('mousemove',function(e){
     if(tp.style.display!=='none'){
