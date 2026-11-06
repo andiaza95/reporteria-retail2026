@@ -3163,7 +3163,7 @@ function proyBuildTable(group){
         var sku=btn.textContent.trim();var nombre=sku;
         var chs=['shopify','meli','falabella','walmart','linio'];
         for(var ci=0;ci<chs.length;ci++){var rows=DATA[chs[ci]]||[];for(var ri=0;ri<rows.length;ri++){if(rows[ri].sku===sku&&rows[ri].nombre){nombre=rows[ri].nombre;break;}}if(nombre!==sku)break;}
-        var SKU_FALLBACK={'ACC-0081':'Camara de seguridad WiFi - Argus 3 Pro Reolink','ACC-0082':'Reolink Argus 3 Ultra 4K - Camara de Seguridad'};
+        var SKU_FALLBACK={'ACC-0081':'Camara de seguridad WiFi - Argus 3 Pro Reolink','ACC-0082':'Reolink Argus 3 Ultra 4K - Camara de Seguridad','IF-40FSB-TS':'Chimenea Eléctrica Empotrable - 40"','IF-50FSB-TS':'Chimenea Eléctrica Empotrable - 50"','IF-60FSB-TS':'Chimenea Eléctrica Empotrable - 60"'};
         if(nombre===sku&&SKU_FALLBACK[sku]) nombre=SKU_FALLBACK[sku];
         var SKU_STRIP={'ACC-0081':true,'ACC-0082':true};
         if(SKU_STRIP[sku]) nombre=nombre.replace(/\s*\+\s*panel solar/i,'').trim();
